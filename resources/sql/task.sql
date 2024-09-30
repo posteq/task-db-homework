@@ -71,3 +71,47 @@ order by amount desc;
 select count(*)
 from flights f
 where scheduled_arrival <> actual_arrival ;
+
+
+--9. Вывести код, модель самолета и места не эконом класса для самолета "Аэробус A321-200" с сортировкой по местам
+
+SELECT aircraft_code,
+		model -> 'ru' AS model ,seat_no,fare_conditions
+FROM aircrafts_data ad
+JOIN seats s using(aircraft_code)
+WHERE fare_conditions NOT like('Economy')
+		AND model ->> 'ru' = 'Аэробус A321-200'
+ORDER BY  seat_no;
+
+--10. Вывести города, в которых больше 1 аэропорта (код аэропорта,аэропорт, город)
+
+SELECT airport_code,
+		 airport_name->'ru' AS airport_name, city ->'ru' AS city
+FROM airports_data ad
+JOIN 
+	(SELECT city,
+		 count(city) AS amount
+	FROM airports_data ad2
+	GROUP BY  city) a2_city using(city)
+WHERE a2_city.amount > 1;
+
+--11. Найти пассажиров, у которых суммарная стоимость бронирований превышает среднюю сумму всех бронирований
+
+
+--12. Найти ближайший вылетающий рейс из Екатеринбурга в Москву, на который еще не завершилась регистрация
+select (status)
+from flights f 
+group by status;
+
+select *
+from flights f
+where departure_airport like (select airport_code
+								from airports_data
+								where city ->> 'ru'= ('Екатеринбург')
+								group by airport_code)
+	and arrival_airport like(select airport_code
+								from airports_data
+								where city ->> 'ru'= ('Москва')
+								group by airport_code)
+	and status like('Scheduled')
+--13. Вывести самый дешевый и дорогой билет и стоимость (в одном результирующем ответе)
