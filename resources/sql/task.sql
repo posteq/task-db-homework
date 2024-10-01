@@ -117,13 +117,13 @@ limit 1;
 --13. Вывести самый дешевый и дорогой билет и стоимость (в одном результирующем ответе)
 
  (select *
-  from bookings
-  order by total_amount
+  from ticket_flights
+  order by amount
   limit 1)
  union
  (select *
-  from bookings
-  order by total_amount DESC
+  from ticket_flights
+  order by amount  DESC
   limit 1);
 
 -- 14 Написать DDL таблицы Customers, должны быть поля id, firstName, LastName, email, phone. Добавить ограничения на поля (constraints)
